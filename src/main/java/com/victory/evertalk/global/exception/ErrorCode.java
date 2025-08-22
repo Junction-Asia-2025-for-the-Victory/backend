@@ -23,7 +23,14 @@ public enum ErrorCode {
     // 인증
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     AUTH_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보가 없습니다."),
-    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다.")
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
+
+    // 에피소드
+    EPISODE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 에피소드를 찾을 수 없습니다."),
+    PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 진행상황을 찾을 수 없습니다."),
+
+    // 캐릭터
+    LIKEABLILTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 호감도를 찾을 수 없습니다.")
 
     ;
 

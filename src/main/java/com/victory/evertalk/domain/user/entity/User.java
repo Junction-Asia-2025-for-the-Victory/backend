@@ -44,6 +44,13 @@ public class User extends BaseTimeEntity {
         this.withdraw = false;
     }
 
+    public static User withId(Integer userId) {
+        User user = new User();
+        user.userId = userId;
+        return user;
+    }
+
+
     public void withdrawUser() {
         this.withdraw = true;
     }
