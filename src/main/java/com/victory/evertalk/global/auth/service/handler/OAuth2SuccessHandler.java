@@ -60,7 +60,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.setHeader("Access-Control-Allow-Origin", frontendUrl);
         response.setHeader("Access-Control-Allow-Credentials", "true");
 
-        response.sendRedirect(frontendUrl + "/");
+        if(user.getGender() == null){
+            // 필수 정보 입력 안 되었을 경우 추가 정보 입력 url로 리다이렉트(url 수정 필요)ㄴ
+            response.sendRedirect(frontendUrl + "/");
+        } else {
+            response.sendRedirect(frontendUrl + "/");
+        }
     }
 
 

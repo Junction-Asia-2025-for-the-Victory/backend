@@ -1,5 +1,6 @@
 package com.victory.evertalk.domain.user.service;
 
+import com.victory.evertalk.domain.user.dto.SetUserProfileRequestDto;
 import com.victory.evertalk.domain.user.entity.User;
 import com.victory.evertalk.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,14 @@ public class UserService {
     public void withdrawUser (Integer userId) {
         User user = userReadService.findUserByIdOrElseThrow(userId);
         user.withdrawUser();
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void setUserProfile(Integer userId, SetUserProfileRequestDto userProfile){
+        User user = userReadService.findUserByIdOrElseThrow(userId);
+        user.addGender(userProfile.getGender());
+        user.changeNickname(userProfile.getNickname());
         userRepository.save(user);
     }
 

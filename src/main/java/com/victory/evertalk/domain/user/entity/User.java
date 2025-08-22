@@ -32,6 +32,9 @@ public class User extends BaseTimeEntity {
     @Column(name = "withdraw", nullable = false)
     private Boolean withdraw;
 
+    @Column(name = "gender", length = 6)
+    private String gender;
+
     @Builder
     public User(String email, String nickname, Provider provider, String providerId) {
         this.email = email;
@@ -43,6 +46,14 @@ public class User extends BaseTimeEntity {
 
     public void withdrawUser() {
         this.withdraw = true;
+    }
+
+    public void addGender(String gender){
+        this.gender = gender;
+    }
+
+    public void changeNickname(String nickname){
+        this.nickname = nickname;
     }
 
 }
