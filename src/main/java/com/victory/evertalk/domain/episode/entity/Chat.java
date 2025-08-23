@@ -47,4 +47,6 @@ public class Chat {
         this.count = count;
     }
 
+    public void finished(boolean finish) { this.finish = finish; }
+
 }

@@ -20,7 +20,9 @@ import com.victory.evertalk.domain.episode.dto.response.EpisodeListResponseDto;
 import com.victory.evertalk.domain.episode.dto.response.StartEpisodeResponseDto;
 import com.victory.evertalk.domain.episode.entity.Chat;
 import com.victory.evertalk.domain.episode.entity.Episode;
+import com.victory.evertalk.domain.episode.entity.Progress;
 import com.victory.evertalk.domain.episode.repository.ChatRepository;
+import com.victory.evertalk.domain.episode.repository.ProgressRepository;
 import com.victory.evertalk.domain.user.entity.User;
 import com.victory.evertalk.domain.user.service.UserReadService;
 import com.victory.evertalk.global.common.client.FastApiClientService;
@@ -47,6 +49,7 @@ public class EpisodeService {
     private final FastApiClientService fastApiClientService;
     private final EmotionReadService emotionReadService;
     private final LikeabilityRepository likeabilityRepository;
+    private final ProgressRepository progressRepository;
 
     private final ObjectMapper om;
 
@@ -128,6 +131,8 @@ public class EpisodeService {
         // 이번 유저 발화가 반영되면 사용자 턴 수가 몇 번째가 되는지 미리 계산
         int userTurnsAfter = chat.getCount() + 1;
         boolean lastChat = userTurnsAfter >= 10;
+
+
         
         // fast API 호출하기 위한 DTO 생성
         UserAnswerFeedbackRequestDto fastApiRequestDto = UserAnswerFeedbackRequestDto.builder()
@@ -150,13 +155,32 @@ public class EpisodeService {
         likeability.updateLikeability(fastApiResponseDto.getAffinity());
         likeabilityRepository.save(likeability);
 
+        int increaseLove = Math.min(
+                fastApiResponseDto.getAffinity() - likeability.getCount(),
+                5
+        );
+
+        if(lastChat){
+            // 해당 에피소드 종료 처리
+            chat.finished(true);
+
+            // 에피소드 진행상황 기록
+            Progress progress = Progress.builder()
+                    .user(user)
+                    .character(character)
+                    .episodeNum(episode.getEpisodeId())
+                    .build();
+
+            progressRepository.save(progress);
+
+        }
 
         return StartEpisodeResponseDto.builder()
                 .chatId(chatId)
                 .chat(fastApiResponseDto.getNext_utterance())
                 .img(fastApiResponseDto.getEmotion())
                 .likeability(likeability.getCount())
-                .changeLike(fastApiResponseDto.getAffinity() - likeability.getCount())
+                .changeLike(increaseLove)
                 .feedback(fastApiResponseDto.getLast_user_correction_input())
                 .lastChat(lastChat)
                 .nickname(user.getNickname())
