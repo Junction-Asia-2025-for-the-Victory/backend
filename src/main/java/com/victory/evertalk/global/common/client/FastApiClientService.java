@@ -19,18 +19,25 @@ public class FastApiClientService {
     private final ObjectMapper objectMapper;
 
     public AIUserAnswerFeedbackResponseDto sendUserAnswerToFastApi(UserAnswerFeedbackRequestDto fastApiRequestDto){
-        AIUserAnswerFeedbackResponseDto responseDto = fastApiWebClient.post()
-                .uri("/ai/api/v1/chat")
-                .bodyValue(fastApiRequestDto)
-                .retrieve()
-                .bodyToMono(AIUserAnswerFeedbackResponseDto.class)
-                .block();
+        AIUserAnswerFeedbackResponseDto responseDto;
 
-        if(responseDto == null){
-            log.debug("삐쌍!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! fast API에서 null 반환됨!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            throw new BaseException(ErrorCode.FAST_API_RESPONSE_NULL);
+        try {
+            responseDto = fastApiWebClient.post()
+                    .uri("/ai/api/v1/chat")
+                    .bodyValue(fastApiRequestDto)
+                    .retrieve()
+                    .bodyToMono(AIUserAnswerFeedbackResponseDto.class)
+                    .block();
+
+            if(responseDto == null){
+                log.debug("삐쌍!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! fast API에서 null 반환됨!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                throw new BaseException(ErrorCode.FAST_API_RESPONSE_NULL);
+            }
+        } catch (org.springframework.web.reactive.function.client.WebClientResponseException e) {
+            // 여기서 FastAPI가 보낸 422의 body에 "detail"이 들어있음
+            log.error("AI 422 body: {}", e.getResponseBodyAsString());
+            throw e;
         }
-
         return responseDto;
     }
 
