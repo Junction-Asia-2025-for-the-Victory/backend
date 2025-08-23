@@ -6,6 +6,7 @@ import com.victory.evertalk.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class UserService {
     }
 
     @Transactional
-    public void setUserProfile(Integer userId, SetUserProfileRequestDto userProfile){
+    public void setUserProfile(Integer userId, @RequestBody SetUserProfileRequestDto userProfile){
         User user = userReadService.findUserByIdOrElseThrow(userId);
         user.addGender(userProfile.getGender());
         user.changeNickname(userProfile.getNickname());

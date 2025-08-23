@@ -161,6 +161,8 @@ public class EpisodeService {
                 .lastChat(lastChat)
                 .nickname(user.getNickname())
                 .characterName(character.getCharacterName())
+                .userAnswer(fastApiRequestDto.getLast_user_input())
+                .isGrammarError(fastApiResponseDto.isGrammarError())
                 .build();
 
     }

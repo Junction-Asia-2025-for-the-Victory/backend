@@ -18,5 +18,7 @@ public class StartEpisodeResponseDto {
     private boolean lastChat;
     private String nickname;
     private String characterName;
+    private String userAnswer;
+    private boolean isGrammarError;
 
 }
