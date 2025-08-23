@@ -36,11 +36,9 @@ public class EpisodeController {
     }
 
     @PostMapping("/chat")
-    public StartEpisodeResponseDto userAnswer(@AuthenticationPrincipal UserPrincipal userPrincipal, HttpServletRequest request, @RequestParam("chatId") Integer chatId, @RequestPart("audioFile") MultipartFile audioFile) {
+    public StartEpisodeResponseDto userAnswer(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestParam("chatId") Integer chatId, @RequestPart("audioFile") MultipartFile audioFile) {
 
-        // 모든 파라미터 출력
-        request.getParameterMap().forEach((key, value) ->
-                System.out.println("Param: " + key + " = " + Arrays.toString(value)));
+        log.debug("service chatId: {}", chatId);
 
         String text = sttService.transcribeWebm(audioFile);
         return episodeService.userAnswer(userPrincipal.getUserId(), chatId, text);
