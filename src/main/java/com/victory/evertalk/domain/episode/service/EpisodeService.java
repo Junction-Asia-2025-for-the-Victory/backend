@@ -222,7 +222,7 @@ public class EpisodeService {
             return om.writeValueAsString(root);
         } catch (Exception e) {
             // 폴백도 동일한 키로
-            return "{\"messages\":[{\"speaker\":\"AI\",\"text\":\"" + escapeJson(startLine) + "\"}]}";
+            return "[{\"speaker\":\"AI\",\"text\":\"" + escapeJson(startLine) + "\"}]";
         }
     }
 
