@@ -119,6 +119,10 @@ public class EpisodeService {
 
 //    public StartEpisodeResponseDto userAnswer(Integer userId, Integer chatId, String text){
     public StartEpisodeResponseDto userAnswer(Integer userId, Integer chatId, String text){
+
+        log.debug("chatId: ", chatId);
+        log.debug("text: ", text);
+
         User user = userReadService.findUserByIdOrElseThrow(userId);
         Chat chat = chatReadService.findChatByChatId(chatId);
         Episode episode = episodeReadService.findEpisodeByEpisodeId(chat.getEpisode().getEpisodeId());
