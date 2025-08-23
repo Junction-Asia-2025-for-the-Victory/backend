@@ -212,21 +212,20 @@ public class EpisodeService {
     // 시작 JSON 생성 (키 통일: speaker/text)
     private String buildInitialChatJson(String startLine) {
         try {
-            ObjectNode root = om.createObjectNode();
-            ArrayNode messages = om.createArrayNode();
+            ArrayNode arr = om.createArrayNode();
 
             ObjectNode first = om.createObjectNode();
             first.put("speaker", "AI");
             first.put("text", startLine != null ? startLine : "");
-            messages.add(first);
+            arr.add(first);
 
-            root.set("messages", messages);
-            return om.writeValueAsString(root);
+            return om.writeValueAsString(arr); // <-- 항상 배열 반환
         } catch (Exception e) {
-            // 폴백도 동일한 키로
+            // 폴백도 배열 유지
             return "[{\"speaker\":\"AI\",\"text\":\"" + escapeJson(startLine) + "\"}]";
         }
     }
+
 
     // 유저 발화/AI응답 누적
     @Transactional
