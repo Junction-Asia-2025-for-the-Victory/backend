@@ -9,11 +9,17 @@ import java.util.List;
 
 public interface EpisodeRepository extends JpaRepository<Episode, Integer> {
 
-    @Query("SELECT DISTINCT c.episode " +
-            "FROM Chat c " +
-            "WHERE c.user.userId = :userId " +
-            "AND c.character.characterId = :characterId")
-    List<Episode> findAllEpisodesByUserIdAndCharacterId(@Param("userId") Integer userId,
-                                                        @Param("characterId") Integer characterId);
+        @Query("""
+        SELECT DISTINCT e
+        FROM Episode e
+        LEFT JOIN Chat c
+          ON c.episode = e
+         AND c.user.userId = :userId
+         AND c.character.characterId = :characterId
+        ORDER BY e.episodeId
+        """)
+        List<Episode> findAllEpisodesByUserIdAndCharacterId(@Param("userId") Integer userId,
+                                                            @Param("characterId") Integer characterId);
+    }
 
-}
+
