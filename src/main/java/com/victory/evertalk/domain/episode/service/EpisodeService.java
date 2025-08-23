@@ -149,7 +149,7 @@ public class EpisodeService {
 
         Emotion emotion = emotionReadService.findEmotionByEmotion(fastApiResponseDto.getEmotion());
 
-        appendLine(chatId, "USER", text);
+        appendLine(chatId, "user", text);
         Face face = faceReadService.findFaceByCharacter_CharacterIdAndEmotion_EmotionId(characterId, emotion.getEmotionId());
 
         likeability.updateLikeability(fastApiResponseDto.getAffinity());
@@ -169,6 +169,16 @@ public class EpisodeService {
                 .build();
 
     }
+
+    private String normalizeSpeaker(String s) {
+        String x = (s == null ? "" : s.trim().toUpperCase(java.util.Locale.ROOT));
+        return switch (x) {
+            case "AI", "CHARACTER", "ASSISTANT", "BOT" -> "character";
+            case "USER", "HUMAN" -> "user";
+            default -> throw new IllegalArgumentException("Unknown speaker: " + s);
+        };
+    }
+
 
     private List<ChatDetailDto> toPreviousChat(String chatJson) {
         if (chatJson == null || chatJson.isBlank()) return List.of();
@@ -215,14 +225,14 @@ public class EpisodeService {
             ArrayNode arr = om.createArrayNode();
 
             ObjectNode first = om.createObjectNode();
-            first.put("speaker", "AI");
+            first.put("speaker", "character");
             first.put("text", startLine != null ? startLine : "");
             arr.add(first);
 
             return om.writeValueAsString(arr); // <-- 항상 배열 반환
         } catch (Exception e) {
             // 폴백도 배열 유지
-            return "[{\"speaker\":\"AI\",\"text\":\"" + escapeJson(startLine) + "\"}]";
+            return "[{\"speaker\":\"character\",\"text\":\"" + escapeJson(startLine) + "\"}]";
         }
     }
 
@@ -245,9 +255,11 @@ public class EpisodeService {
                 messages = root.isArray() ? (ArrayNode) root : om.createArrayNode();
             }
 
+            String norm = normalizeSpeaker(speaker);
+
             // 새 메시지 추가
             ObjectNode m = om.createObjectNode();
-            m.put("speaker", speaker);  // "AI" or "USER"
+            m.put("speaker", norm);  // "AI" or "USER"
             m.put("text", text);
             messages.add(m);
 
@@ -255,7 +267,7 @@ public class EpisodeService {
             chat.addChat(messages.toString());
 
             // 사용자 턴만 카운트
-            if ("USER".equals(speaker)) {
+            if ("user".equals(norm)) {
                 chat.addCount(chat.getCount() + 1);
             }
 
