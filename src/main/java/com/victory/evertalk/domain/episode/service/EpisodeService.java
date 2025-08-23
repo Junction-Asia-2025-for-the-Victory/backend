@@ -7,12 +7,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.victory.evertalk.domain.character.entity.Character;
 import com.victory.evertalk.domain.character.entity.Emotion;
-import com.victory.evertalk.domain.character.entity.Face;
 import com.victory.evertalk.domain.character.entity.Likeability;
 import com.victory.evertalk.domain.character.repository.LikeabilityRepository;
 import com.victory.evertalk.domain.character.service.CharacterReadService;
 import com.victory.evertalk.domain.character.service.EmotionReadService;
-import com.victory.evertalk.domain.character.service.FaceReadService;
 import com.victory.evertalk.domain.character.service.LikeabilityReadService;
 import com.victory.evertalk.domain.episode.dto.request.ChatDetailDto;
 import com.victory.evertalk.domain.episode.dto.request.UserAnswerFeedbackRequestDto;
@@ -43,7 +41,6 @@ public class EpisodeService {
     private final UserReadService userReadService;
     private final LikeabilityReadService likeabilityReadService;
     private final ProgressReadService progressReadService;
-    private final FaceReadService faceReadService;
     private final CharacterReadService characterReadService;
     private final ChatRepository chatRepository;
     private final ChatReadService chatReadService;
@@ -86,7 +83,6 @@ public class EpisodeService {
             Episode episode = episodeReadService.findEpisodeByEpisodeId(episodeId);
             Emotion emotion = emotionReadService.findEmotionByEmotion("normal");
 
-            Face face = faceReadService.findFaceByCharacter_CharacterIdAndEmotion_EmotionId(characterId, emotion.getEmotionId());
             Character character = characterReadService.findCharacterByCharacterId(characterId);
 
             Likeability likeability = likeabilityReadService.findLikeabilityByUserIdAndCharacterId(userId, characterId);
@@ -107,10 +103,10 @@ public class EpisodeService {
         return StartEpisodeResponseDto.builder()
                 .chatId(saved.getChatId())
                 .chat(episode.getStart())
-                .img(face.getUrl())
+                .img("")
                 .changeLike(0)
                 .characterName(character.getCharacterName())
-                .feedback("")
+                .feedback("Neutral")
                 .lastChat(false)
                 .nickname(user.getNickname())
                 .likeability(likeability.getCount())
@@ -150,7 +146,6 @@ public class EpisodeService {
         Emotion emotion = emotionReadService.findEmotionByEmotion(fastApiResponseDto.getEmotion());
 
         appendLine(chatId, "user", text);
-        Face face = faceReadService.findFaceByCharacter_CharacterIdAndEmotion_EmotionId(characterId, emotion.getEmotionId());
 
         likeability.updateLikeability(fastApiResponseDto.getAffinity());
         likeabilityRepository.save(likeability);
@@ -159,7 +154,7 @@ public class EpisodeService {
         return StartEpisodeResponseDto.builder()
                 .chatId(chatId)
                 .chat(fastApiResponseDto.getNext_utterance())
-                .img(face.getUrl())
+                .img(fastApiResponseDto.getEmotion())
                 .likeability(likeability.getCount())
                 .changeLike(fastApiResponseDto.getAffinity() - likeability.getCount())
                 .feedback(fastApiResponseDto.getLast_user_correction_input())
