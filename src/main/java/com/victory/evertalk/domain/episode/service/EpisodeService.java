@@ -1,5 +1,6 @@
 package com.victory.evertalk.domain.episode.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -26,6 +27,7 @@ import com.victory.evertalk.domain.user.entity.User;
 import com.victory.evertalk.domain.user.service.UserReadService;
 import com.victory.evertalk.global.common.client.FastApiClientService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +36,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EpisodeService {
 
     private final EpisodeReadService episodeReadService;
@@ -167,20 +170,26 @@ public class EpisodeService {
 
     private List<ChatDetailDto> toPreviousChat(String chatJson) {
         if (chatJson == null || chatJson.isBlank()) return List.of();
+
         try {
             JsonNode root = om.readTree(chatJson);
-            JsonNode arr = root.isArray() ? root : root.path("messages");
-            if (!arr.isArray()) return List.of();
+
+            // appendLine()에서 저장하는 형태: {"messages": [...]}
+            JsonNode messagesNode = root.path("messages");
+            if (!messagesNode.isArray()) {
+                log.warn("messages field is not array: {}", chatJson);
+                return List.of();
+            }
 
             ArrayNode normalized = om.createArrayNode();
-            for (JsonNode n : arr) {
-                String rawSpeaker = textOf(n, "speaker", textOf(n, "sp", null));
-                String text       = textOf(n, "text",    textOf(n, "tx", ""));
+            for (JsonNode n : messagesNode) {  // messages 배열 순회
+                String rawSpeaker = textOf(n, "speaker", null);
+                String text = textOf(n, "text", "");
                 if (rawSpeaker == null) continue;
 
-                String normalizedSpeaker = switch (rawSpeaker.trim().toLowerCase()) {
-                    case "character", "ai", "assistant", "bot" -> "character";
-                    case "user", "human"                        -> "user";
+                String normalizedSpeaker = switch (rawSpeaker.trim().toUpperCase()) {  // toUpperCase로 변경
+                    case "AI", "CHARACTER", "ASSISTANT", "BOT" -> "character";
+                    case "USER", "HUMAN" -> "user";
                     default -> throw new IllegalArgumentException("Unknown speaker: " + rawSpeaker);
                 };
 
@@ -190,9 +199,10 @@ public class EpisodeService {
                 normalized.add(one);
             }
 
-            // enum의 @JsonCreator/@JsonValue 규칙에 따라 자동 역직렬화
-            return om.convertValue(normalized, new com.fasterxml.jackson.core.type.TypeReference<List<ChatDetailDto>>() {});
+            return om.convertValue(normalized, new TypeReference<List<ChatDetailDto>>() {});
+
         } catch (Exception e) {
+            log.error("Failed to parse/normalize previous_chat: {}", chatJson, e);
             throw new RuntimeException("Failed to parse/normalize previous_chat", e);
         }
     }
