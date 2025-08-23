@@ -173,21 +173,16 @@ public class EpisodeService {
 
         try {
             JsonNode root = om.readTree(chatJson);
+            if (!root.isArray()) return List.of();
 
-            // appendLine()에서 저장하는 형태: {"messages": [...]}
-            JsonNode messagesNode = root.path("messages");
-            if (!messagesNode.isArray()) {
-                log.warn("messages field is not array: {}", chatJson);
-                return List.of();
-            }
-
+            // 이제 root가 바로 배열이므로 간단함
             ArrayNode normalized = om.createArrayNode();
-            for (JsonNode n : messagesNode) {  // messages 배열 순회
+            for (JsonNode n : root) {
                 String rawSpeaker = textOf(n, "speaker", null);
                 String text = textOf(n, "text", "");
                 if (rawSpeaker == null) continue;
 
-                String normalizedSpeaker = switch (rawSpeaker.trim().toUpperCase()) {  // toUpperCase로 변경
+                String normalizedSpeaker = switch (rawSpeaker.trim().toUpperCase()) {
                     case "AI", "CHARACTER", "ASSISTANT", "BOT" -> "character";
                     case "USER", "HUMAN" -> "user";
                     default -> throw new IllegalArgumentException("Unknown speaker: " + rawSpeaker);
@@ -236,24 +231,32 @@ public class EpisodeService {
     public void appendLine(Integer chatId, String speaker, String text) {
         Chat chat = chatRepository.findById(chatId).orElseThrow();
         try {
-            // 기존 문자열(JSON) → 트리
+            // 기존 문자열(JSON 배열) → 배열 노드
             String current = chat.getChat();
-            ObjectNode root = (ObjectNode) om.readTree(current != null ? current : "{\"messages\":[]}");
-            ArrayNode messages = (ArrayNode) root.withArray("messages");
+            ArrayNode messages;
 
+            if (current == null || current.isBlank()) {
+                // 첫 번째 메시지인 경우 빈 배열 생성
+                messages = om.createArrayNode();
+            } else {
+                // 기존 배열 파싱
+                JsonNode root = om.readTree(current);
+                messages = root.isArray() ? (ArrayNode) root : om.createArrayNode();
+            }
+
+            // 새 메시지 추가
             ObjectNode m = om.createObjectNode();
             m.put("speaker", speaker);  // "AI" or "USER"
             m.put("text", text);
             messages.add(m);
 
-            // 트리 → 문자열 저장
-            chat.addChat(root.toString());
+            // 배열 → 문자열 저장
+            chat.addChat(messages.toString());
 
-//            // 정책 ①: 전체 메시지 수로 count 유지(권장, 헷갈림 없음)
-//            chat.addCount(messages.size());
-
-            // 정책 ②: 사용자 턴만 세고 싶다면 아래처럼 (위 한 줄 대신 사용)
-             if ("USER".equals(speaker)) { chat.addCount(chat.getCount() + 1); }
+            // 사용자 턴만 카운트
+            if ("USER".equals(speaker)) {
+                chat.addCount(chat.getCount() + 1);
+            }
 
         } catch (Exception e) {
             throw new RuntimeException("Append chat failed (invalid JSON)", e);
