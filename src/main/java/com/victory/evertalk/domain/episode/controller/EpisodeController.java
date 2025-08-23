@@ -7,11 +7,14 @@ import com.victory.evertalk.domain.episode.dto.response.StartEpisodeResponseDto;
 import com.victory.evertalk.domain.episode.service.EpisodeService;
 import com.victory.evertalk.domain.episode.service.SttService;
 import com.victory.evertalk.global.auth.token.UserPrincipal;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Arrays;
 
 @Slf4j
 @RestController
@@ -33,9 +36,11 @@ public class EpisodeController {
     }
 
     @PostMapping("/chat")
-    public StartEpisodeResponseDto userAnswer(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestParam("chatId") Integer chatId, @RequestPart("audioFile") MultipartFile audioFile) {
+    public StartEpisodeResponseDto userAnswer(@AuthenticationPrincipal UserPrincipal userPrincipal, HttpServletRequest request, @RequestParam("chatId") Integer chatId, @RequestPart("audioFile") MultipartFile audioFile) {
 
-        log.debug("chatId: ", chatId);
+        // 모든 파라미터 출력
+        request.getParameterMap().forEach((key, value) ->
+                System.out.println("Param: " + key + " = " + Arrays.toString(value)));
 
         String text = sttService.transcribeWebm(audioFile);
         return episodeService.userAnswer(userPrincipal.getUserId(), chatId, text);
