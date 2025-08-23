@@ -35,6 +35,8 @@ public class EpisodeController {
     @PostMapping("/chat")
     public StartEpisodeResponseDto userAnswer(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestParam("chatId") Integer chatId, @RequestPart("audioFile") MultipartFile audioFile) {
 
+        log.debug("chatId: ", chatId);
+
         String text = sttService.transcribeWebm(audioFile);
         return episodeService.userAnswer(userPrincipal.getUserId(), chatId, text);
 
