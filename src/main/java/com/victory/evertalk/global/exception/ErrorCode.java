@@ -30,7 +30,9 @@ public enum ErrorCode {
     PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 진행상황을 찾을 수 없습니다."),
 
     // 캐릭터
-    LIKEABLILTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 호감도를 찾을 수 없습니다.")
+    CHARACTER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 캐릭터를 찾을 수 없습니다."),
+    LIKEABLILTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 호감도를 찾을 수 없습니다."),
+    FACE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이미지를 찾을 수 없습니다.")
 
     ;
 
