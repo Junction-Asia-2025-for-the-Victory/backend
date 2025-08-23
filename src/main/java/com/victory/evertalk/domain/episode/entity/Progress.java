@@ -26,4 +26,7 @@ public class Progress {
     @JoinColumn(name = "character_id", nullable = false)
     private Character character;
 
+    @Column(name = "episode_num")
+    private Integer episodeNum;
+
 }

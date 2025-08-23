@@ -28,8 +28,8 @@ public class EpisodeService {
 
         userReadService.findUserByIdOrElseThrow(userId);
 
-        Integer likeability = likeabilityReadService.findLikeabilityByUserIdAndCharacterId(userId, characterId).getLikeabilityId();
-        Integer progress = progressReadService.findProgressByUserIdAndCharacterId(userId).getProgressId();
+        Integer likeability = likeabilityReadService.findLikeabilityByUserIdAndCharacterId(userId, characterId).getCount();
+        Integer progress = progressReadService.findProgressByUserIdAndCharacterId(userId).getEpisodeNum();
 
         List<Episode> episodeList = episodeReadService.findEpisodeListByUserIdAndCharacterId(userId);
 
@@ -39,6 +39,7 @@ public class EpisodeService {
                     .episodeId(episode.getEpisodeId())
                     .episodeTitle(episode.getTitle())
                     .build();
+            episodeDetailList.add(episodeDetail);
         }
 
         return EpisodeListResponseDto.builder()

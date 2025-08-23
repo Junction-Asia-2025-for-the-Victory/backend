@@ -22,6 +22,7 @@ public class ProgressReadService {
                 .orElseGet(() -> Progress.builder()
                         .user(User.withId(userId))                       // 최소한의 참조
                         .character(Character.builder().characterId(characterId).build())
+                        .episodeNum(0)
                         .build()
                 );
     }
