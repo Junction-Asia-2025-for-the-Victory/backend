@@ -84,7 +84,6 @@ public class EpisodeService {
             User user = userReadService.findUserByIdOrElseThrow(userId);
 
             Episode episode = episodeReadService.findEpisodeByEpisodeId(episodeId);
-            Emotion emotion = emotionReadService.findEmotionByEmotion("normal");
 
             Character character = characterReadService.findCharacterByCharacterId(characterId);
 
@@ -106,10 +105,10 @@ public class EpisodeService {
         return StartEpisodeResponseDto.builder()
                 .chatId(saved.getChatId())
                 .chat(episode.getStart())
-                .img("")
+                .img("Neutral")
                 .changeLike(0)
                 .characterName(character.getCharacterName())
-                .feedback("Neutral")
+                .feedback("")
                 .lastChat(false)
                 .nickname(user.getNickname())
                 .likeability(likeability.getCount())
