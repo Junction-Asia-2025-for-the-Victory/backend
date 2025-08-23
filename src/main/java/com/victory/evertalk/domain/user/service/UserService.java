@@ -23,7 +23,7 @@ public class UserService {
     }
 
     @Transactional
-    public void setUserProfile(Integer userId, @RequestBody SetUserProfileRequestDto userProfile){
+    public void setUserProfile(Integer userId, SetUserProfileRequestDto userProfile){
         User user = userReadService.findUserByIdOrElseThrow(userId);
         user.addGender(userProfile.getGender());
         user.changeNickname(userProfile.getNickname());
