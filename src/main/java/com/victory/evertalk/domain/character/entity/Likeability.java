@@ -28,4 +28,8 @@ public class Likeability {
     @Column(name = "count")
     private Integer count;
 
+    public void updateLikeability(Integer count){
+        this.count = count;
+    }
+
 }

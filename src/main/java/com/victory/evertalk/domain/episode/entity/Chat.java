@@ -39,4 +39,12 @@ public class Chat {
     @Column(name = "finish", nullable = false)
     private boolean finish;
 
+    public void addChat(String chat){
+        this.chat = chat;
+    }
+
+    public void addCount(Integer count){
+        this.count = count;
+    }
+
 }

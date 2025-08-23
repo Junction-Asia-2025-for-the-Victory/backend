@@ -1,4 +1,4 @@
-package com.victory.evertalk.domain.episode.dto;
+package com.victory.evertalk.domain.episode.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class StartEpisodeResponseDto {
 
+    private Integer chatId;
     private String chat;
     private String img;
     private Integer likeability;

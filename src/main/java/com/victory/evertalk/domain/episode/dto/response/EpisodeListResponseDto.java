@@ -1,4 +1,4 @@
-package com.victory.evertalk.domain.episode.dto;
+package com.victory.evertalk.domain.episode.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

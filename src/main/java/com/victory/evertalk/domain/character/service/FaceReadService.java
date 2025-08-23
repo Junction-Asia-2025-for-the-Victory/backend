@@ -13,8 +13,8 @@ public class FaceReadService {
 
     private final FaceRepository faceRepository;
 
-    public Face findFaceByCharacterId(Integer characterId){
-        return faceRepository.findFaceByCharacter_CharacterId(characterId)
+    public Face findFaceByCharacter_CharacterIdAndEmotion_EmotionId(Integer characterId, Integer emotionId){
+        return faceRepository.findFaceByCharacter_CharacterIdAndEmotion_EmotionId(characterId, emotionId)
                 .orElseThrow(() -> new BaseException(ErrorCode.FACE_NOT_FOUND));
     }
 

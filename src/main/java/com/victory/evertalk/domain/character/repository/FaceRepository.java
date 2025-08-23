@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface FaceRepository extends JpaRepository<Face, Integer> {
 
-    Optional<Face> findFaceByCharacter_CharacterId(Integer characterId);
+    Optional<Face> findFaceByCharacter_CharacterIdAndEmotion_EmotionId(Integer characterId, Integer emotionId);
 
 }

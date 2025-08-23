@@ -28,11 +28,13 @@ public enum ErrorCode {
     // 에피소드
     EPISODE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 에피소드를 찾을 수 없습니다."),
     PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 진행상황을 찾을 수 없습니다."),
+    FAST_API_RESPONSE_NULL(HttpStatus.INTERNAL_SERVER_ERROR, "FAST API 에러"),
 
     // 캐릭터
     CHARACTER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 캐릭터를 찾을 수 없습니다."),
     LIKEABLILTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 호감도를 찾을 수 없습니다."),
     FACE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이미지를 찾을 수 없습니다."),
+    EMOTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 감정을 찾을 수 없습니다."),
 
     // 채팅
     CHAT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅을 찾을 수 없습니다."),
